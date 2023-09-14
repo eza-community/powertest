@@ -1,5 +1,7 @@
 use regex::Regex;
-use std::io::{self, BufRead};
+use std::fs::{self, File};
+use std::io::{self, BufRead, Write};
+use std::path::Path;
 
 const DEPTH: usize = 2; // Adjust this value as needed
 const BINARY: &'static str = "eza";
@@ -32,10 +34,8 @@ fn main() {
             }
         }
     }
-    // println!("Set: {:?}", set);
 
     let powerset = generate_powerset(&set, DEPTH);
-    // println!("Powerset: {:?}", powerset);
 
     let output_strings: Vec<String> = powerset
         .iter()
@@ -43,6 +43,28 @@ fn main() {
         .collect();
 
     println!("Output Strings: {:#?}", output_strings);
+
+    // Create the dump directory if it doesn't exist
+    let dump_path = Path::new("dump");
+    if !dump_path.exists() {
+        fs::create_dir(dump_path).expect("Failed to create dump directory");
+    }
+
+    // Write each string in output_strings to a new file in the dump directory
+    for content in &output_strings {
+        // Extract the arguments part from the content
+        let args_line = content.lines().nth(1).unwrap_or("");
+        let args = args_line
+            .split("args = \"")
+            .nth(1)
+            .unwrap_or("")
+            .trim_end_matches('\"');
+
+        let file_path = dump_path.join(format!("test_{}.txt", args));
+        let mut file = File::create(file_path).expect("Failed to create file");
+        file.write_all(content.as_bytes())
+            .expect("Failed to write to file");
+    }
 }
 
 fn generate_powerset<T: Clone>(set: &[T], depth: usize) -> Vec<Vec<T>> {
