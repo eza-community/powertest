@@ -4,7 +4,9 @@ use std::io::{self, BufRead, Write};
 use std::path::Path;
 
 const DEPTH: usize = 2; // Adjust this value as needed
+
 const BINARY: &'static str = "eza";
+const ARGS: &'static str = "tests/itest";
 
 fn main() {
     let short = r"(-[^-])";
@@ -39,7 +41,14 @@ fn main() {
 
     let output_strings: Vec<String> = powerset
         .iter()
-        .map(|subset| format!("bin.name = \"{}\"\nargs = \"{}\"", BINARY, subset.join(" ")))
+        .map(|subset| {
+            format!(
+                "bin.name = \"{}\"\nargs = \"{} {}\"",
+                BINARY,
+                ARGS,
+                subset.join(" ")
+            )
+        })
         .collect();
 
     println!("Output Strings: {:#?}", output_strings);
@@ -58,9 +67,11 @@ fn main() {
             .split("args = \"")
             .nth(1)
             .unwrap_or("")
-            .trim_end_matches('\"');
+            .trim_end_matches('\"')
+            .replace(" ", "_")
+            .replace("/", "_");  // This is to handle the "tests/itest" in ARGS
 
-        let file_path = dump_path.join(format!("test_{}.txt", args));
+        let file_path = dump_path.join(format!("ptest_{}.toml", args));
         let mut file = File::create(file_path).expect("Failed to create file");
         file.write_all(content.as_bytes())
             .expect("Failed to write to file");
