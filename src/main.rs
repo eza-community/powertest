@@ -39,10 +39,10 @@ fn main() {
 
     let output_strings: Vec<String> = powerset
         .iter()
-        .map(|subset| format!("{} {}", BINARY, subset.join(" ")))
+        .map(|subset| format!("bin.name = \"{}\"\nargs = \"{}\"", BINARY, subset.join(" ")))
         .collect();
 
-    println!("Output Strings: {:?}", output_strings);
+    println!("Output Strings: {:#?}", output_strings);
 }
 
 fn generate_powerset<T: Clone>(set: &[T], depth: usize) -> Vec<Vec<T>> {
