@@ -8,6 +8,8 @@ const DEPTH: usize = 2; // Adjust this value as needed
 const BINARY: &'static str = "eza";
 const ARGS: &'static str = "tests/itest";
 
+const CONFIG: &'static str = ".ptest.yaml";
+
 pub mod data {
     use serde::{Deserialize, Serialize};
     use std::fs;
@@ -15,34 +17,44 @@ pub mod data {
     use log::*;
 
     #[derive(Serialize, Deserialize, Debug)]
-    struct Config {
+    pub struct Config {
         #[serde(skip_serializing_if = "Option::is_none")]
-        DEPTH: Option<String>,
+        pub depth: Option<usize>,
         #[serde(skip_serializing_if = "Option::is_none")]
-        BINARY: Option<String>,
+        pub binary: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
-        ARGS: Option<String>,
+        pub args: Option<String>,
     }
 
     impl Config {
-        /// Loads the configuration toml from a path in to the Config struct.
-        pub fn new(path: &String) -> Self {
+        /// Loads the configuration toml from a path into the Config struct.
+        pub fn new(path: &String) -> Result<Self, Box<dyn std::error::Error>> {
             debug!("initializing new Config struct");
-            let yaml = fs::read_to_string(path).unwrap_or_else(|_| {
-                panic!("Should have been able to read the file: path -> {:?}", path,)
-            });
+
+            let yaml = fs::read_to_string(path)?;
             debug!("deserialized yaml from config file");
-            serde_yaml::from_str(&yaml).unwrap_or_else(|_| {
-                panic!(
-                    "Should have been able to deserialize yaml config: path -> {:?}",
-                    path,
-                )
-            })
+
+            let config = serde_yaml::from_str(&yaml)?;
+
+            Ok(config)
         }
     }
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
+    use crate::data::Config;
+
+    // Add default config
+    let config = match Config::new(&CONFIG.to_string()) {
+        Ok(config) => config,
+        Err(e) => Config {
+            depth: Some(DEPTH),
+            binary: Some(BINARY.to_string()),
+            args: Some(ARGS.to_string()),
+        },
+    };
+    println!("{:#?}", config);
+
     let short = r"(-[^-])";
     let long = r"(--\w+)";
     let re_short = Regex::new(short).unwrap();
@@ -110,6 +122,8 @@ fn main() {
         file.write_all(content.as_bytes())
             .expect("Failed to write to file");
     }
+
+    Ok(())
 }
 
 fn generate_powerset<T: Clone>(set: &[T], depth: usize) -> Vec<Vec<T>> {
