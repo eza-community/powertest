@@ -3,11 +3,6 @@ use std::fs::{self, File};
 use std::io::{self, BufRead, Write};
 use std::path::Path;
 
-const DEPTH: usize = 2; // Adjust this value as needed
-
-const BINARY: &'static str = "eza";
-const ARGS: &'static str = "tests/itest";
-
 const CONFIG: &'static str = ".ptest.yaml";
 
 pub mod data {
@@ -20,8 +15,6 @@ pub mod data {
 
     const BINARY: &'static str = "eza";
     const ARGS: &'static str = "tests/itest";
-
-    const CONFIG: &'static str = ".ptest.yaml";
 
     #[derive(Serialize, Deserialize, Debug)]
     pub struct Config {
@@ -48,7 +41,7 @@ pub mod data {
         pub fn load(path: &str) -> Self {
             match Self::new(path) {
                 Ok(config) => config,
-                Err(e) => Config {
+                Err(_) => Config {
                     depth: Some(DEPTH),
                     binary: Some(BINARY.to_string()),
                     args: Some(ARGS.to_string()),
@@ -61,7 +54,7 @@ pub mod data {
 fn main() -> std::io::Result<()> {
     use crate::data::Config;
 
-    println!("{:#?}", Config::load(CONFIG));
+    let config = Config::load(CONFIG);
 
     let short = r"(-[^-])";
     let long = r"(--\w+)";
@@ -91,15 +84,15 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    let powerset = generate_powerset(&set, DEPTH);
+    let powerset = generate_powerset(&set, config.depth.unwrap());
 
     let output_strings: Vec<String> = powerset
         .iter()
         .map(|subset| {
             format!(
                 "bin.name = \"{}\"\nargs = \"{} {}\"",
-                BINARY,
-                ARGS,
+                &config.binary.as_ref().unwrap(),
+                &config.args.as_ref().unwrap(),
                 subset.join(" ")
             )
         })
