@@ -8,6 +8,40 @@ const DEPTH: usize = 2; // Adjust this value as needed
 const BINARY: &'static str = "eza";
 const ARGS: &'static str = "tests/itest";
 
+pub mod data {
+    use serde::{Deserialize, Serialize};
+    use std::fs;
+
+    use log::*;
+
+    #[derive(Serialize, Deserialize, Debug)]
+    struct Config {
+        #[serde(skip_serializing_if = "Option::is_none")]
+        DEPTH: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        BINARY: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        ARGS: Option<String>,
+    }
+
+    impl Config {
+        /// Loads the configuration toml from a path in to the Config struct.
+        pub fn new(path: &String) -> Self {
+            debug!("initializing new Config struct");
+            let yaml = fs::read_to_string(path).unwrap_or_else(|_| {
+                panic!("Should have been able to read the file: path -> {:?}", path,)
+            });
+            debug!("deserialized yaml from config file");
+            serde_yaml::from_str(&yaml).unwrap_or_else(|_| {
+                panic!(
+                    "Should have been able to deserialize yaml config: path -> {:?}",
+                    path,
+                )
+            })
+        }
+    }
+}
+
 fn main() {
     let short = r"(-[^-])";
     let long = r"(--\w+)";
@@ -69,7 +103,7 @@ fn main() {
             .unwrap_or("")
             .trim_end_matches('\"')
             .replace(" ", "_")
-            .replace("/", "_");  // This is to handle the "tests/itest" in ARGS
+            .replace("/", "_"); // This is to handle the "tests/itest" in ARGS
 
         let file_path = dump_path.join(format!("ptest_{}.toml", args));
         let mut file = File::create(file_path).expect("Failed to create file");
