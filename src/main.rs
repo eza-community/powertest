@@ -16,6 +16,13 @@ pub mod data {
 
     use log::*;
 
+    const DEPTH: usize = 2; // Adjust this value as needed
+
+    const BINARY: &'static str = "eza";
+    const ARGS: &'static str = "tests/itest";
+
+    const CONFIG: &'static str = ".ptest.yaml";
+
     #[derive(Serialize, Deserialize, Debug)]
     pub struct Config {
         #[serde(skip_serializing_if = "Option::is_none")]
@@ -28,7 +35,7 @@ pub mod data {
 
     impl Config {
         /// Loads the configuration toml from a path into the Config struct.
-        pub fn new(path: &String) -> Result<Self, Box<dyn std::error::Error>> {
+        pub fn new(path: &str) -> Result<Self, Box<dyn std::error::Error>> {
             debug!("initializing new Config struct");
 
             let yaml = fs::read_to_string(path)?;
@@ -38,22 +45,23 @@ pub mod data {
 
             Ok(config)
         }
+        pub fn load(path: &str) -> Self {
+            match Self::new(path) {
+                Ok(config) => config,
+                Err(e) => Config {
+                    depth: Some(DEPTH),
+                    binary: Some(BINARY.to_string()),
+                    args: Some(ARGS.to_string()),
+                },
+            }
+        }
     }
 }
 
 fn main() -> std::io::Result<()> {
     use crate::data::Config;
 
-    // Add default config
-    let config = match Config::new(&CONFIG.to_string()) {
-        Ok(config) => config,
-        Err(e) => Config {
-            depth: Some(DEPTH),
-            binary: Some(BINARY.to_string()),
-            args: Some(ARGS.to_string()),
-        },
-    };
-    println!("{:#?}", config);
+    println!("{:#?}", Config::load(CONFIG));
 
     let short = r"(-[^-])";
     let long = r"(--\w+)";
