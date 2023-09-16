@@ -123,9 +123,7 @@ args: "test_args"
 }
 
 fn main() -> std::io::Result<()> {
-    use crate::data::Config;
-
-    let config = Config::load(CONFIG);
+    let config = crate::data::Config::load(CONFIG);
 
     // println!("{config:#?}");
 
@@ -266,16 +264,20 @@ pub mod math {
         fn test_generate_powerset() {
             let set: Vec<i32> = vec![1, 2, 3];
             let depth = 2;
-            let result = generate_powerset(&set, depth);
-            let expected = vec![
+            let mut result = generate_powerset(&set, depth);
+            let mut expected = vec![
                 vec![],
                 vec![1],
                 vec![2],
-                vec![1, 2],
                 vec![3],
+                vec![1, 2],
                 vec![1, 3],
                 vec![2, 3],
             ];
+            // NOTE: Order isn't guaranteed, so we do this.
+            result.sort();
+            expected.sort();
+
             assert_eq!(result, expected);
         }
 
@@ -288,6 +290,7 @@ pub mod math {
             assert_eq!(result, expected);
         }
 
+        #[test]
         fn test_generate_powerset_combined() {
             let set = vec![
                 (Some("a".to_string()), Some("b".to_string())),
@@ -296,8 +299,8 @@ pub mod math {
                 (None, None),
             ];
             let depth = 2;
-            let result = generate_powerset_combined(&set, depth);
-            let expected = vec![
+            let mut result = generate_powerset_combined(&set, depth);
+            let mut expected = vec![
                 vec![],
                 vec![(Some("a".to_string()), Some("b".to_string()))],
                 vec![(Some("c".to_string()), None)],
@@ -316,6 +319,11 @@ pub mod math {
                 vec![(Some("c".to_string()), None), (None, None)],
                 vec![(None, Some("d".to_string())), (None, None)],
             ];
+
+            // NOTE: Order isn't guaranteed, so we do this.
+            result.sort();
+            expected.sort();
+
             assert_eq!(result, expected);
         }
 
