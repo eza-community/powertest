@@ -24,6 +24,18 @@ pub mod data {
         pub binary: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
         pub args: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub commands: Option<Vec<Command>>,
+    }
+
+    #[derive(Serialize, Deserialize, Debug)]
+    pub struct Command {
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub short: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub long: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub values: Option<Vec<String>>,
     }
 
     impl Config {
@@ -45,6 +57,7 @@ pub mod data {
                     depth: Some(DEPTH),
                     binary: Some(BINARY.to_string()),
                     args: Some(ARGS.to_string()),
+                    commands: None,
                 },
             }
         }
