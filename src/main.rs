@@ -131,10 +131,13 @@ fn main() -> std::io::Result<()> {
 
     let short = r"(-[^-])";
     let long = r"(--\w+)";
+    let combined = r"(-[^-])(, )(--\w+)";
     let re_short = Regex::new(short).unwrap();
     let re_long = Regex::new(long).unwrap();
+    let re_combined = Regex::new(combined).unwrap();
 
     let mut set = vec![];
+    let mut set_combined = vec![];
 
     // Read lines from stdin until EOF
     let stdin = io::stdin();
@@ -155,7 +158,23 @@ fn main() -> std::io::Result<()> {
                 set.push(matched.as_str().to_string());
             }
         }
+
+        // Check if the line matches the combined long
+        for capture in re_combined.captures_iter(&line) {
+            set_combined.push(match (capture.get(1), capture.get(3)) {
+                (Some(short), Some(long)) => (
+                    Some(short.as_str().to_string()),
+                    Some(long.as_str().to_string()),
+                ),
+                (Some(short), None) => (Some(short.as_str().to_string()), None),
+                (None, Some(long)) => (None, Some(long.as_str().to_string())),
+                (None, None) => (None, None),
+            })
+        }
     }
+
+    println!("{set:#?}");
+    println!("{set_combined:#?}");
 
     let powerset = generate_powerset(&set, config.depth.unwrap());
 
