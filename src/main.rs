@@ -1,6 +1,9 @@
-use regex::Regex;
-use std::fs::{self, File};
-use std::io::{self, BufRead, Write};
+// TODO: remove allows
+#[allow(unused)]
+use std::fs::File;
+#[allow(unused)]
+use std::io::Write;
+#[allow(unused)]
 use std::path::Path;
 
 const CONFIG: &'static str = ".ptest.yaml";
@@ -122,62 +125,54 @@ args: "test_args"
     }
 }
 
+pub mod parser {
+    use regex::Regex;
+
+    use std::io::{self, BufRead};
+
+    pub fn parse() -> Vec<(Option<String>, Option<String>)> {
+        let pattern = r"(-[^-])(, )(--\w+)";
+        let re = Regex::new(pattern).unwrap();
+
+        let mut set = vec![];
+
+        // Read lines from stdin until EOF
+        let stdin = io::stdin();
+
+        for line in stdin.lock().lines() {
+            let line = line.unwrap().trim().to_string();
+
+            // Check if the line matches the combined long
+            for capture in re.captures_iter(&line) {
+                set.push(match (capture.get(1), capture.get(3)) {
+                    (Some(short), Some(long)) => (
+                        Some(short.as_str().to_string()),
+                        Some(long.as_str().to_string()),
+                    ),
+                    (Some(short), None) => (Some(short.as_str().to_string()), None),
+                    (None, Some(long)) => (None, Some(long.as_str().to_string())),
+                    (None, None) => (None, None),
+                })
+            }
+        }
+
+        set
+    }
+}
+
 fn main() -> std::io::Result<()> {
     let config = crate::data::Config::load(CONFIG);
 
     // println!("{config:#?}");
 
-    let short = r"(-[^-])";
-    let long = r"(--\w+)";
-    let combined = r"(-[^-])(, )(--\w+)";
-    let re_short = Regex::new(short).unwrap();
-    let re_long = Regex::new(long).unwrap();
-    let re_combined = Regex::new(combined).unwrap();
+    let set = crate::parser::parse();
 
-    let mut set = vec![];
-    let mut set_combined = vec![];
+    println!("{set:#?}");
 
-    // Read lines from stdin until EOF
-    let stdin = io::stdin();
+    /*
+    let powerset = math::generate_powerset_combined(, config.depth.unwrap());
 
-    for line in stdin.lock().lines() {
-        let line = line.unwrap().trim().to_string();
-
-        // Check if the line matches the regex short
-        for capture in re_short.captures_iter(&line) {
-            if let Some(matched) = capture.get(1) {
-                set.push(matched.as_str().to_string());
-            }
-        }
-
-        // Check if the line matches the regex long
-        for capture in re_long.captures_iter(&line) {
-            if let Some(matched) = capture.get(1) {
-                set.push(matched.as_str().to_string());
-            }
-        }
-
-        // Check if the line matches the combined long
-        for capture in re_combined.captures_iter(&line) {
-            set_combined.push(match (capture.get(1), capture.get(3)) {
-                (Some(short), Some(long)) => (
-                    Some(short.as_str().to_string()),
-                    Some(long.as_str().to_string()),
-                ),
-                (Some(short), None) => (Some(short.as_str().to_string()), None),
-                (None, Some(long)) => (None, Some(long.as_str().to_string())),
-                (None, None) => (None, None),
-            })
-        }
-    }
-
-    // println!("{set:#?}");
-    // println!("{set_combined:#?}");
-
-    let powerset = math::generate_powerset(&set, config.depth.unwrap());
-    let powerset_combined = math::generate_powerset_combined(&set_combined, config.depth.unwrap());
-
-    println!("{powerset_combined:#?}");
+    println!("{powerset:#?}");
 
     let output_strings: Vec<String> = powerset
         .iter()
@@ -192,6 +187,7 @@ fn main() -> std::io::Result<()> {
         .collect();
 
     // println!("Output Strings: {:#?}", output_strings);
+
 
     // Create the dump directory if it doesn't exist
     let dump_path = Path::new("dump");
@@ -215,7 +211,7 @@ fn main() -> std::io::Result<()> {
         let mut file = File::create(file_path).expect("Failed to create file");
         file.write_all(content.as_bytes())
             .expect("Failed to write to file");
-    }
+    }*/
 
     Ok(())
 }
