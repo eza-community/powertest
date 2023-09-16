@@ -7,6 +7,7 @@ const CONFIG: &'static str = ".ptest.yaml";
 
 pub mod data {
     use serde::{Deserialize, Serialize};
+    use std::collections::HashMap;
     use std::fs;
 
     use log::*;
@@ -25,7 +26,7 @@ pub mod data {
         #[serde(skip_serializing_if = "Option::is_none")]
         pub args: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
-        pub commands: Option<Vec<Command>>,
+        pub commands: Option<HashMap<String, Command>>,
     }
 
     #[derive(Serialize, Deserialize, Debug)]
@@ -51,23 +52,28 @@ pub mod data {
             Ok(config)
         }
         pub fn load(path: &str) -> Self {
+            let mut commands = HashMap::new();
+            commands.insert(
+                "time-style".to_string(),
+                Command {
+                    short: None,
+                    long: Some("time-style".to_string()),
+                    values: Some(vec![
+                        "default".to_string(),
+                        "iso".to_string(),
+                        "long-iso".to_string(),
+                        "full-iso".to_string(),
+                        "relative".to_string(),
+                    ]),
+                },
+            );
             match Self::new(path) {
                 Ok(config) => config,
                 Err(_) => Config {
                     depth: Some(DEPTH),
                     binary: Some(BINARY.to_string()),
                     args: Some(ARGS.to_string()),
-                    commands: Some(vec![Command {
-                        short: None,
-                        long: Some("time-style".to_string()),
-                        values: Some(vec![
-                            "default".to_string(),
-                            "iso".to_string(),
-                            "long-iso".to_string(),
-                            "full-iso".to_string(),
-                            "relative".to_string(),
-                        ]),
-                    }]),
+                    commands: Some(commands),
                 },
             }
         }
