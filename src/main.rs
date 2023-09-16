@@ -57,7 +57,17 @@ pub mod data {
                     depth: Some(DEPTH),
                     binary: Some(BINARY.to_string()),
                     args: Some(ARGS.to_string()),
-                    commands: None,
+                    commands: Some(vec![Command {
+                        short: None,
+                        long: Some("time-style".to_string()),
+                        values: Some(vec![
+                            "default".to_string(),
+                            "iso".to_string(),
+                            "long-iso".to_string(),
+                            "full-iso".to_string(),
+                            "relative".to_string(),
+                        ]),
+                    }]),
                 },
             }
         }
@@ -68,6 +78,8 @@ fn main() -> std::io::Result<()> {
     use crate::data::Config;
 
     let config = Config::load(CONFIG);
+
+    println!("{config:#?}");
 
     let short = r"(-[^-])";
     let long = r"(--\w+)";
