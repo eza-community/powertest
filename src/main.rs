@@ -169,11 +169,11 @@ fn main() -> std::io::Result<()> {
 
     println!("{set:#?}");
 
-    /*
-    let powerset = math::generate_powerset_combined(, config.depth.unwrap());
+    let powerset = math::generate_powerset_combined(&set, config.depth.unwrap());
 
     println!("{powerset:#?}");
 
+    /*
     let output_strings: Vec<String> = powerset
         .iter()
         .map(|subset| {
