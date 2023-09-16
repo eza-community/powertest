@@ -26,7 +26,7 @@ pub mod data {
         #[serde(skip_serializing_if = "Option::is_none")]
         pub args: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
-        pub commands: Option<HashMap<String, Command>>,
+        pub commands: Option<HashMap<(Option<String>, Option<String>), Command>>,
     }
 
     #[derive(Serialize, Deserialize, Debug)]
@@ -54,7 +54,7 @@ pub mod data {
         pub fn load(path: &str) -> Self {
             let mut commands = HashMap::new();
             commands.insert(
-                "time-style".to_string(),
+                (None, Some("time-style".to_string())),
                 Command {
                     short: None,
                     long: Some("time-style".to_string()),
@@ -76,6 +76,48 @@ pub mod data {
                     commands: Some(commands),
                 },
             }
+        }
+    }
+    #[cfg(test)]
+    mod tests {
+        use crate::data::*;
+        use std::fs::File;
+        use std::io::Write;
+
+        const TEST_CONFIG: &str = r#"
+depth: 3
+binary: "test_binary"
+args: "test_args"
+"#;
+
+        #[test]
+        fn test_config_new() {
+            // Create a temporary YAML file
+            let path = "temp_test_config.yaml";
+            let mut file = File::create(path).unwrap();
+            file.write_all(TEST_CONFIG.as_bytes()).unwrap();
+
+            // Load the configuration
+            let config = Config::new(path).unwrap();
+
+            // Clean up
+            std::fs::remove_file(path).unwrap();
+
+            // Assertions
+            assert_eq!(config.depth, Some(3));
+            assert_eq!(config.binary, Some("test_binary".to_string()));
+            assert_eq!(config.args, Some("test_args".to_string()));
+        }
+
+        #[test]
+        fn test_config_load_with_invalid_path() {
+            let config = Config::load("non_existent_path.yaml");
+
+            // Assertions for default values
+            assert_eq!(config.depth, Some(crate::data::DEPTH));
+            assert_eq!(config.binary, Some(crate::data::BINARY.to_string()));
+            assert_eq!(config.args, Some(crate::data::ARGS.to_string()));
+            assert!(config.commands.is_some());
         }
     }
 }
