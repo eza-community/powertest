@@ -1,6 +1,6 @@
 // TODO: remove allows
 #[allow(unused)]
-use std::fs::File;
+use std::fs::{self, File};
 #[allow(unused)]
 use std::io::Write;
 #[allow(unused)]
@@ -59,30 +59,29 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    println!("{set:?}");
+    // println!("{set:?}");
 
     // println!("{set:#?}");
 
     let powerset = math::generate_powerset(&set, config.depth.unwrap());
 
-    println!("{powerset:#?}");
+    // println!("{powerset:#?}");
 
-    // let output_strings: Vec<(Option<String>, Option<String>)> = powerset.iter().collect();
-    // .map(|subset| {
-    //     format!(
-    //         "bin.name = \"{}\"\nargs = \"{} {}\"",
-    //         &config.binary.as_ref().unwrap(),
-    //         &config.args.as_ref().unwrap(),
-    //         subset.join(" ")
-    //     )
-    // })
+    let output_strings: Vec<String> = powerset
+        .iter()
+        .map(|subset| {
+            format!(
+                "bin.name = \"{}\"\nargs = \"{} {}\"",
+                &config.binary.as_ref().unwrap(),
+                &config.args.as_ref().unwrap(),
+                subset.join(" ")
+            )
+        })
+        .collect();
 
-    /*
-     *
     println!("{output_strings:#?}");
 
     // println!("Output Strings: {:#?}", output_strings);
-
 
     // Create the dump directory if it doesn't exist
     let dump_path = Path::new("dump");
@@ -106,7 +105,7 @@ fn main() -> std::io::Result<()> {
         let mut file = File::create(file_path).expect("Failed to create file");
         file.write_all(content.as_bytes())
             .expect("Failed to write to file");
-    }*/
+    }
 
     Ok(())
 }
