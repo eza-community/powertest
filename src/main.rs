@@ -63,9 +63,9 @@ fn main() -> std::io::Result<()> {
 
     // println!("{set:#?}");
 
-    // let powerset = math::generate_powerset_combined(&set, config.depth.unwrap());
+    let powerset = math::generate_powerset(&set, config.depth.unwrap());
 
-    // println!("{powerset:#?}");
+    println!("{powerset:#?}");
 
     // let output_strings: Vec<(Option<String>, Option<String>)> = powerset.iter().collect();
     // .map(|subset| {
