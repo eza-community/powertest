@@ -36,25 +36,86 @@ fn main() -> std::io::Result<()> {
     // })
 
     // Go through all elements in the powerset
-    // println!("{:#?}", powerset);
-    for option_pair in powerset {
-        for option in &option_pair {
-            let stuff = config.commands.as_ref().expect("NOT_FOUND").get(&option);
-            // println!("{thing:?}");
-            // println!("{stuff:#?}");
-            println!("{:#?}", option);
+    println!("{:#?}", powerset);
+    for options in powerset {
+        let mut res_options: Vec<(Option<String>, Option<String>)> = vec![];
+
+        for option in options {
+            //if let Some(stuff) = config.commands.as_ref().unwrap().get(&option) {
+            if let Some((key, stuff)) = config.commands.as_ref().unwrap().get_key_value(&option) {
+                match key {
+                    (Some(left), Some(right)) => {
+                        for value in stuff.values.as_ref().unwrap() {
+                            println!("{} {}", left, &value);
+                            println!("{} {}", right, &value);
+                        }
+                    }
+                    (Some(left), None) => {
+                        for value in stuff.values.as_ref().unwrap() {
+                            println!("{} {}", left, &value);
+                        }
+                    }
+                    (None, Some(right)) => {
+                        for value in stuff.values.as_ref().unwrap() {
+                            println!("{} {}", right, &value);
+                        }
+                    }
+                    (None, None) => todo!(),
+                }
+            } else {
+                match &option {
+                    (Some(left), Some(right)) => {
+                        println!("{}", left);
+                        println!("{}", right);
+                    }
+                    (Some(left), None) => {
+                        println!("{}", left);
+                    }
+                    (None, Some(right)) => {
+                        println!("{}", right);
+                    }
+                    (None, None) => todo!(),
+                }
+                // println!("{option:?}");
+                res_options.push(option);
+            }
         }
-        //println!("{:#?}", option_pair);
     }
 
-    println!(
-        "{:?}",
-        config
-            .commands
-            .as_ref()
-            .unwrap()
-            .get_key_value(&(Some("-s".to_string()), Some("--sort".to_string())))
-    );
+    // This approach doesn't work!
+    //
+    // Because... It assumes depth, but it can vary!
+    // for (left, right) in powerset {
+    //     let res: Vec<Option<String>> = vec![];
+
+    //     match (
+    //         config.commands.as_ref().expect("NOT_FOUND").get(&left),
+    //         config.commands.as_ref().expect("NOT_FOUND").get(&right),
+    //     ) {
+    //         (Some(left), Some(right)) => println!("left right"),
+    //         (Some(left), None) => println!("left right"),
+    //         (None, Some(right)) => println!("left right"),
+    //         (None, None) => println!("left right"),
+    //     }
+
+    //     for option in &option_pair {
+    //         if let Some(stuff) = config.commands.as_ref().expect("NOT_FOUND").get(&option) {
+    //             println!("{stuff:#?}");
+    //         }
+    //         // println!("{thing:?}");
+    //         // println!("{:#?}", option);
+    //     }
+    //     // println!("{:#?}", option_pair);
+    // }
+
+    // println!(
+    //     "{:?}",
+    //     config
+    //         .commands
+    //         .as_ref()
+    //         .unwrap()
+    //         .get_key_value(&(Some("-s".to_string()), Some("--sort".to_string())))
+    // );
 
     // println!("{config:#?}");
 
