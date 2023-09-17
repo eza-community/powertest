@@ -8,7 +8,7 @@ mod data;
 mod math;
 mod parser;
 
-const CONFIG: &'static str = ".ptest.yaml";
+const CONFIG: &'static str = "powertest.yaml";
 
 pub mod utils {
     use std::io::{self};
@@ -75,10 +75,10 @@ fn main() -> std::io::Result<()> {
 
     if let Some(_config) = matches.get_one::<String>("config") {
         todo!()
-    } else if let Some(_dump) = matches.get_one::<String>("dump") {
-        todo!()
     } else if let Some(depth) = matches.get_one::<usize>("depth") {
         config.depth = Some(*depth);
+    } else if let Some(dump_dir) = matches.get_one::<String>("dump") {
+        config.dump_dir = Some(dump_dir.to_string());
     }
 
     let parse: Vec<(Option<String>, Option<String>)>;
@@ -157,7 +157,8 @@ fn main() -> std::io::Result<()> {
     // println!("Output Strings: {:#?}", output_strings);
 
     // Create the dump directory if it doesn't exist
-    let dump_path = Path::new("dump");
+    let binding = config.dump_dir.unwrap();
+    let dump_path = Path::new(&binding);
     if !dump_path.exists() {
         fs::create_dir(dump_path).expect("Failed to create dump directory");
     }

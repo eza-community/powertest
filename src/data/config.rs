@@ -4,6 +4,8 @@ use std::fs;
 
 use log::*;
 
+const DUMP_DIR: &'static str = "dump";
+
 const DEPTH: usize = 2; // Adjust this value as needed
 
 const BINARY: &'static str = "eza";
@@ -11,6 +13,8 @@ const ARGS: &'static str = "tests/itest";
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dump_dir: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub depth: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -78,6 +82,7 @@ impl Config {
         match Self::new(path) {
             Ok(config) => config,
             Err(_) => Config {
+                dump_dir: Some(DUMP_DIR.to_string()),
                 depth: Some(DEPTH),
                 binary: Some(BINARY.to_string()),
                 args: Some(ARGS.to_string()),
