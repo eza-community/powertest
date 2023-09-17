@@ -11,7 +11,7 @@ mod parser;
 const CONFIG: &'static str = ".ptest.yaml";
 
 pub mod utils {
-    use std::io::{self, BufReader};
+    use std::io::{self};
     use std::process::{Command, Output};
 
     pub fn get_help(
@@ -37,7 +37,7 @@ pub mod utils {
 }
 
 fn main() -> std::io::Result<()> {
-    let config = crate::data::Config::load(CONFIG);
+    let mut config = crate::data::Config::load(CONFIG);
 
     let matches = command!()
         .author(crate_authors!("\n"))
@@ -50,7 +50,7 @@ fn main() -> std::io::Result<()> {
         )
         .arg(
             Arg::new("dump")
-                .short('d')
+                .short('D')
                 .long("dump")
                 .value_name("dump")
                 .help("Specify dump dir"),
@@ -62,6 +62,14 @@ fn main() -> std::io::Result<()> {
                 .value_name("run")
                 .help("Specify help command"),
         )
+        .arg(
+            Arg::new("depth")
+                .short('d')
+                .long("depth")
+                .value_name("depth")
+                .value_parser(clap::value_parser!(usize))
+                .help("Specify max set length"),
+        )
         //.arg(arg!(-s --short ... "Shows a short aporism."))
         .get_matches();
 
@@ -69,12 +77,13 @@ fn main() -> std::io::Result<()> {
         todo!()
     } else if let Some(_dump) = matches.get_one::<String>("dump") {
         todo!()
+    } else if let Some(depth) = matches.get_one::<usize>("depth") {
+        config.depth = Some(*depth);
     }
 
     let parse: Vec<(Option<String>, Option<String>)>;
 
     if let Some(run) = matches.get_one::<String>("run") {
-        //println!("{:?}", crate::utils::get_help(run, &[]));
         parse = match crate::utils::get_help(run, &[]) {
             Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
             Err(e) => panic!("{:?}", e),
