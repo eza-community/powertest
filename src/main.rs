@@ -1,5 +1,5 @@
 use std::fs::{self, File};
-use std::io::Write;
+use std::io::{BufReader, Write};
 use std::path::Path;
 
 use clap::{command, crate_authors, Arg};
@@ -14,10 +14,11 @@ pub mod utils {
     use std::io::{self, BufReader};
     use std::process::{Command, Output};
 
-    pub fn get_help<'a>(
-        command: &'a str,
-        _args: &'a [&'a str],
-    ) -> Result<BufReader<&'a [u8]>, std::io::Error> {
+    pub fn get_help(
+        command: &str,
+        _args: &[&str],
+        //) -> Result<BufReader<&'a [u8]>, std::io::Error> {
+    ) -> Result<Vec<u8>, std::io::Error> {
         // TODO: parse args
         // let output: Output = Command::new(command).args(args).output()?;
         let output: Output = Command::new(command).args(["--help"]).output()?;
@@ -30,7 +31,8 @@ pub mod utils {
             ));
         }
 
-        Ok(BufReader::new(output.stdout.as_slice()))
+        //Ok(BufReader::new(output.stdout.as_slice()))
+        Ok(output.stdout)
     }
 }
 
@@ -74,7 +76,7 @@ fn main() -> std::io::Result<()> {
     if let Some(run) = matches.get_one::<String>("run") {
         //println!("{:?}", crate::utils::get_help(run, &[]));
         parse = match crate::utils::get_help(run, &[]) {
-            Ok(parse) => crate::parser::parse(parse),
+            Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
             Err(e) => panic!("{:?}", e),
         };
     } else {
