@@ -17,11 +17,53 @@ fn main() -> std::io::Result<()> {
 
     // println!("{config:#?}");
 
-    let set = parser::parse();
+    let parse = parser::parse();
+
+    let mut set = vec![];
+
+    for option in parse {
+        if let Some((key, stuff)) = config.commands.as_ref().unwrap().get_key_value(&option) {
+            match key {
+                (Some(left), Some(right)) => {
+                    for value in stuff.values.as_ref().unwrap() {
+                        set.push(format!("{} {}", left, &value));
+                        set.push(format!("{} {}", right, &value));
+                    }
+                }
+                (Some(left), None) => {
+                    for value in stuff.values.as_ref().unwrap() {
+                        set.push(format!("{} {}", left, &value));
+                    }
+                }
+                (None, Some(right)) => {
+                    for value in stuff.values.as_ref().unwrap() {
+                        set.push(format!("{} {}", right, &value));
+                    }
+                }
+                (None, None) => todo!(),
+            }
+        } else {
+            match &option {
+                (Some(left), Some(right)) => {
+                    set.push(format!("{}", left));
+                    set.push(format!("{}", right));
+                }
+                (Some(left), None) => {
+                    set.push(format!("{}", left));
+                }
+                (None, Some(right)) => {
+                    set.push(format!("{}", right));
+                }
+                (None, None) => todo!(),
+            }
+        }
+    }
+
+    println!("{set:?}");
 
     // println!("{set:#?}");
 
-    let powerset = math::generate_powerset_combined(&set, config.depth.unwrap());
+    // let powerset = math::generate_powerset_combined(&set, config.depth.unwrap());
 
     // println!("{powerset:#?}");
 
@@ -34,46 +76,6 @@ fn main() -> std::io::Result<()> {
     //         subset.join(" ")
     //     )
     // })
-    for option in set {
-        //if let Some(stuff) = config.commands.as_ref().unwrap().get(&option) {
-        if let Some((key, stuff)) = config.commands.as_ref().unwrap().get_key_value(&option) {
-            match key {
-                (Some(left), Some(right)) => {
-                    for value in stuff.values.as_ref().unwrap() {
-                        println!("{} {}", left, &value);
-                        println!("{} {}", right, &value);
-                    }
-                }
-                (Some(left), None) => {
-                    for value in stuff.values.as_ref().unwrap() {
-                        println!("{} {}", left, &value);
-                    }
-                }
-                (None, Some(right)) => {
-                    for value in stuff.values.as_ref().unwrap() {
-                        println!("{} {}", right, &value);
-                    }
-                }
-                (None, None) => todo!(),
-            }
-        } else {
-            match &option {
-                (Some(left), Some(right)) => {
-                    println!("{}", left);
-                    println!("{}", right);
-                }
-                (Some(left), None) => {
-                    println!("{}", left);
-                }
-                (None, Some(right)) => {
-                    println!("{}", right);
-                }
-                (None, None) => todo!(),
-            }
-            // println!("{option:?}");
-            //res_options.push(option);
-        }
-    }
 
     /*
     // Go through all elements in the powerset
