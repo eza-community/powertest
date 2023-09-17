@@ -32,6 +32,7 @@ pub mod data {
         pub commands: Option<HashMap<(Option<String>, Option<String>), Command>>,
     }
 
+    /// TODO: Redundant data, key and value already act as short and long
     #[derive(Serialize, Deserialize, Debug)]
     pub struct Command {
         #[serde(skip_serializing_if = "Option::is_none")]
@@ -67,6 +68,21 @@ pub mod data {
                         "long-iso".to_string(),
                         "full-iso".to_string(),
                         "relative".to_string(),
+                    ]),
+                },
+            );
+            commands.insert(
+                (Some("-s".to_string()), Some("sort".to_string())),
+                Command {
+                    short: Some("-s".to_string()),
+                    long: Some("time-style".to_string()),
+                    // TODO: non-exhaustive
+                    values: Some(vec![
+                        "accessed".to_string(),
+                        "age".to_string(),
+                        "changed".to_string(),
+                        "created".to_string(),
+                        "date".to_string(),
                     ]),
                 },
             );
@@ -144,6 +160,7 @@ pub mod parser {
 
             // Check if the line matches the combined long
             for capture in re.captures_iter(&line) {
+                // println!("{:?}, {:?}", capture.get(1), capture.get(3));
                 set.push(match (capture.get(1), capture.get(3)) {
                     (Some(short), Some(long)) => (
                         Some(short.as_str().to_string()),
@@ -167,24 +184,38 @@ fn main() -> std::io::Result<()> {
 
     let set = crate::parser::parse();
 
-    println!("{set:#?}");
+    // println!("{set:#?}");
 
     let powerset = math::generate_powerset_combined(&set, config.depth.unwrap());
 
-    println!("{powerset:#?}");
+    // println!("{powerset:#?}");
+
+    // let output_strings: Vec<(Option<String>, Option<String>)> = powerset.iter().collect();
+    // .map(|subset| {
+    //     format!(
+    //         "bin.name = \"{}\"\nargs = \"{} {}\"",
+    //         &config.binary.as_ref().unwrap(),
+    //         &config.args.as_ref().unwrap(),
+    //         subset.join(" ")
+    //     )
+    // })
+
+    // Go through all elements in the powerset
+    // println!("{:#?}", powerset);
+    for option_pair in powerset {
+        for thing in &option_pair {
+            let stuff = config.commands.as_ref().expect("NOT_FOUND").get(&thing);
+            // println!("{thing:?}");
+            // println!("{stuff:#?}");
+        }
+        println!("{:#?}", option_pair);
+    }
+
+    // println!("{config:#?}");
 
     /*
-    let output_strings: Vec<String> = powerset
-        .iter()
-        .map(|subset| {
-            format!(
-                "bin.name = \"{}\"\nargs = \"{} {}\"",
-                &config.binary.as_ref().unwrap(),
-                &config.args.as_ref().unwrap(),
-                subset.join(" ")
-            )
-        })
-        .collect();
+     *
+    println!("{output_strings:#?}");
 
     // println!("Output Strings: {:#?}", output_strings);
 
