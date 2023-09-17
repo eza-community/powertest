@@ -1,4 +1,3 @@
-
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
@@ -48,7 +47,7 @@ impl Config {
     pub fn load(path: &str) -> Self {
         let mut commands = HashMap::new();
         commands.insert(
-            (None, Some("time-style".to_string())),
+            (None, Some("--time-style".to_string())),
             Command {
                 short: None,
                 long: Some("time-style".to_string()),
@@ -62,7 +61,7 @@ impl Config {
             },
         );
         commands.insert(
-            (Some("-s".to_string()), Some("sort".to_string())),
+            (Some("-s".to_string()), Some("--sort".to_string())),
             Command {
                 short: Some("-s".to_string()),
                 long: Some("time-style".to_string()),
@@ -89,7 +88,7 @@ impl Config {
 }
 #[cfg(test)]
 mod tests {
-    use crate::data::*;
+    use super::*;
     use std::fs::File;
     use std::io::Write;
 
@@ -123,9 +122,9 @@ args: "test_args"
         let config = Config::load("non_existent_path.yaml");
 
         // Assertions for default values
-        assert_eq!(config.depth, Some(crate::data::DEPTH));
-        assert_eq!(config.binary, Some(crate::data::BINARY.to_string()));
-        assert_eq!(config.args, Some(crate::data::ARGS.to_string()));
+        assert_eq!(config.depth, Some(DEPTH));
+        assert_eq!(config.binary, Some(BINARY.to_string()));
+        assert_eq!(config.args, Some(ARGS.to_string()));
         assert!(config.commands.is_some());
     }
 }

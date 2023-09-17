@@ -38,13 +38,48 @@ fn main() -> std::io::Result<()> {
     // Go through all elements in the powerset
     // println!("{:#?}", powerset);
     for option_pair in powerset {
-        for thing in &option_pair {
-            let stuff = config.commands.as_ref().expect("NOT_FOUND").get(&thing);
+        for option in &option_pair {
+            let stuff = config.commands.as_ref().expect("NOT_FOUND").get(&option);
             // println!("{thing:?}");
             // println!("{stuff:#?}");
+            println!("{:#?}", option);
         }
-        println!("{:#?}", option_pair);
+        //println!("{:#?}", option_pair);
     }
+
+    println!(
+        "{:?}",
+        config
+            .commands
+            .as_ref()
+            .unwrap()
+            .get_key_value(&(Some("-s".to_string()), Some("--sort".to_string())))
+    );
+
+    // println!("{config:#?}");
+
+    // Get the Command associated with the key (None, Some("time-style"))
+    // if let Some(command) = config
+    //     .commands
+    //     .as_ref()
+    //     .unwrap()
+    //     .get(&(None, Some("--time-style".to_string())))
+    // {
+    //     println!("{:?}", command);
+    // } else {
+    //     println!("Key not found");
+    // }
+
+    // // Get the Command associated with the key (None, Some("time-style"))
+    // if let Some(command) = config
+    //     .commands
+    //     .unwrap()
+    //     .get(&(Some("-s".to_string()), Some("--sort".to_string())))
+    // {
+    //     println!("{:?}", command);
+    // } else {
+    //     println!("Key not found");
+    // }
 
     // println!("{config:#?}");
 
