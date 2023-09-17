@@ -71,11 +71,16 @@ fn main() -> std::io::Result<()> {
         todo!()
     } else if let Some(dump) = matches.get_one::<String>("dump") {
         todo!()
-    } else if let Some(run) = matches.get_one::<String>("run") {
-        println!("{:?}", crate::utils::get_help(run, &[]));
     }
 
-    let parse = parser::parse();
+    let mut parse: Vec<(Option<String>, Option<String>)>;
+
+    if let Some(run) = matches.get_one::<String>("run") {
+        //println!("{:?}", crate::utils::get_help(run, &[]));
+        parse = crate::parser::parse(std::io::stdin().lock());
+    } else {
+        parse = crate::parser::parse(std::io::stdin().lock());
+    }
 
     let mut set = vec![];
 

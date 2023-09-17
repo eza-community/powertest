@@ -2,16 +2,16 @@ use regex::Regex;
 
 use std::io::{self, BufRead};
 
-pub fn parse() -> Vec<(Option<String>, Option<String>)> {
+pub fn parse<R: BufRead>(input: R) -> Vec<(Option<String>, Option<String>)> {
     let pattern = r"(-[^-])(, )(--\w+)";
     let re = Regex::new(pattern).unwrap();
 
     let mut set = vec![];
 
     // Read lines from stdin until EOF
-    let stdin = io::stdin();
+    // let stdin = io::stdin();
 
-    for line in stdin.lock().lines() {
+    for line in input.lines() {
         let line = line.unwrap().trim().to_string();
 
         // Check if the line matches the combined long
