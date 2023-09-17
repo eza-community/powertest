@@ -1,6 +1,6 @@
 use regex::Regex;
 
-use std::io::{self, BufRead};
+use std::io::BufRead;
 
 pub fn parse<R: BufRead>(input: R) -> Vec<(Option<String>, Option<String>)> {
     let pattern = r"(-[^-])(, )(--\w+)";

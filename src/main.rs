@@ -2,7 +2,7 @@ use std::fs::{self, File};
 use std::io::Write;
 use std::path::Path;
 
-use clap::{arg, command, crate_authors, Arg};
+use clap::{command, crate_authors, Arg};
 
 mod data;
 mod math;
@@ -11,10 +11,13 @@ mod parser;
 const CONFIG: &'static str = ".ptest.yaml";
 
 pub mod utils {
-    use std::io::{self, BufRead, BufReader};
+    use std::io::{self, BufReader};
     use std::process::{Command, Output};
 
-    pub fn get_help(command: &str, args: &[&str]) -> io::Result<()> {
+    pub fn get_help<'a>(
+        command: &'a str,
+        _args: &'a [&'a str],
+    ) -> Result<BufReader<&'a [u8]>, std::io::Error> {
         // TODO: parse args
         // let output: Output = Command::new(command).args(args).output()?;
         let output: Output = Command::new(command).args(["--help"]).output()?;
@@ -27,14 +30,7 @@ pub mod utils {
             ));
         }
 
-        let reader = BufReader::new(output.stdout.as_slice());
-
-        for line in reader.lines() {
-            let line = line?;
-            println!("{}", line);
-        }
-
-        Ok(())
+        Ok(BufReader::new(output.stdout.as_slice()))
     }
 }
 
@@ -67,17 +63,20 @@ fn main() -> std::io::Result<()> {
         //.arg(arg!(-s --short ... "Shows a short aporism."))
         .get_matches();
 
-    if let Some(config) = matches.get_one::<String>("config") {
+    if let Some(_config) = matches.get_one::<String>("config") {
         todo!()
-    } else if let Some(dump) = matches.get_one::<String>("dump") {
+    } else if let Some(_dump) = matches.get_one::<String>("dump") {
         todo!()
     }
 
-    let mut parse: Vec<(Option<String>, Option<String>)>;
+    let parse: Vec<(Option<String>, Option<String>)>;
 
     if let Some(run) = matches.get_one::<String>("run") {
         //println!("{:?}", crate::utils::get_help(run, &[]));
-        parse = crate::parser::parse(std::io::stdin().lock());
+        parse = match crate::utils::get_help(run, &[]) {
+            Ok(parse) => crate::parser::parse(parse),
+            Err(e) => panic!("{:?}", e),
+        };
     } else {
         parse = crate::parser::parse(std::io::stdin().lock());
     }
