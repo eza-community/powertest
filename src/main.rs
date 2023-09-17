@@ -1,10 +1,8 @@
-// TODO: remove allows
-#[allow(unused)]
 use std::fs::{self, File};
-#[allow(unused)]
 use std::io::Write;
-#[allow(unused)]
 use std::path::Path;
+
+use clap::{arg, command, crate_authors, Arg};
 
 mod data;
 mod math;
@@ -12,10 +10,70 @@ mod parser;
 
 const CONFIG: &'static str = ".ptest.yaml";
 
+pub mod utils {
+    use std::io::{self, BufRead, BufReader};
+    use std::process::{Command, Output};
+
+    pub fn get_help(command: &str, args: &[&str]) -> io::Result<()> {
+        // TODO: parse args
+        // let output: Output = Command::new(command).args(args).output()?;
+        let output: Output = Command::new(command).args(["--help"]).output()?;
+
+        if !output.status.success() {
+            eprintln!("Command failed with status: {:?}", output.status);
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                "Command execution failed",
+            ));
+        }
+
+        let reader = BufReader::new(output.stdout.as_slice());
+
+        for line in reader.lines() {
+            let line = line?;
+            println!("{}", line);
+        }
+
+        Ok(())
+    }
+}
+
 fn main() -> std::io::Result<()> {
     let config = crate::data::Config::load(CONFIG);
 
-    // println!("{config:#?}");
+    let matches = command!()
+        .author(crate_authors!("\n"))
+        .arg(
+            Arg::new("config")
+                .short('c')
+                .long("config")
+                .value_name("config")
+                .help("Specify config file"),
+        )
+        .arg(
+            Arg::new("dump")
+                .short('d')
+                .long("dump")
+                .value_name("dump")
+                .help("Specify dump dir"),
+        )
+        .arg(
+            Arg::new("run")
+                .short('r')
+                .long("run")
+                .value_name("run")
+                .help("Specify help command"),
+        )
+        //.arg(arg!(-s --short ... "Shows a short aporism."))
+        .get_matches();
+
+    if let Some(config) = matches.get_one::<String>("config") {
+        todo!()
+    } else if let Some(dump) = matches.get_one::<String>("dump") {
+        todo!()
+    } else if let Some(run) = matches.get_one::<String>("run") {
+        println!("{:?}", crate::utils::get_help(run, &[]));
+    }
 
     let parse = parser::parse();
 
