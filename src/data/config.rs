@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::fs;
+use std::fs::{self, write};
+use std::io::Error;
 
 use log::*;
 
@@ -92,8 +93,9 @@ impl Config {
             },
         }
     }
-    pub fn gen_example_config(&self) {
-        println!("{:#?}", serde_yaml::to_string(&self));
+    pub fn gen_example_config(&self) -> Result<(), Error> {
+        let data = serde_yaml::to_string(&self).unwrap();
+        write(CONFIG, data)
     }
 }
 #[cfg(test)]
