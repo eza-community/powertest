@@ -38,13 +38,8 @@ pub struct Config {
     pub commands: Option<HashMap<(Option<String>, Option<String>), Command>>,
 }
 
-/// TODO: Redundant data, key and value already act as short and long
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Command {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub short: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub long: Option<String>,
     /// Command prefix, e.g. `--tree` in `--tree -L <n>`
     ///
     /// TODO: Implement
@@ -71,8 +66,6 @@ impl Config {
         commands.insert(
             (None, Some("--time-style".to_string())),
             Command {
-                short: None,
-                long: Some("time-style".to_string()),
                 prefix: None,
                 values: Some(vec![
                     "default".to_string(),
@@ -86,8 +79,6 @@ impl Config {
         commands.insert(
             (Some("-s".to_string()), Some("--sort".to_string())),
             Command {
-                short: Some("-s".to_string()),
-                long: Some("time-style".to_string()),
                 prefix: None,
                 // TODO: non-exhaustive
                 values: Some(vec![
