@@ -79,8 +79,10 @@ fn main() -> std::io::Result<()> {
     }
 
     if let Some(init) = matches.get_one::<u8>("init") {
-        config.gen_example_config();
-        return Ok(());
+        if init > &0 {
+            config.gen_example_config();
+            return Ok(());
+        }
     }
 
     if let Some(dump_dir) = matches.get_one::<String>("dump") {
