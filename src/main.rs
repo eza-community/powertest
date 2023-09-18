@@ -2,7 +2,7 @@ use std::fs::{self, File};
 use std::io::{BufReader, Write};
 use std::path::Path;
 
-use clap::{command, crate_authors, Arg};
+use clap::{arg, command, crate_authors, Arg};
 
 mod data;
 mod math;
@@ -37,6 +37,7 @@ pub mod utils {
 fn main() -> std::io::Result<()> {
     let matches = command!()
         .author(crate_authors!("\n"))
+        .arg(arg!(--init ... "Init powertest.toml"))
         .arg(
             Arg::new("config")
                 .short('c')
@@ -75,6 +76,11 @@ fn main() -> std::io::Result<()> {
         config = crate::data::Config::load(config_file);
     } else {
         config = crate::data::Config::load(data::CONFIG);
+    }
+
+    if let Some(init) = matches.get_one::<u8>("init") {
+        config.gen_example_config();
+        return Ok(());
     }
 
     if let Some(dump_dir) = matches.get_one::<String>("dump") {

@@ -92,8 +92,8 @@ impl Config {
             },
         }
     }
-    pub fn gen_example_config(path: &str) -> Self {
-        todo!()
+    pub fn gen_example_config(&self) {
+        println!("{:#?}", serde_yaml::to_string(&self));
     }
 }
 #[cfg(test)]
