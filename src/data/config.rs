@@ -16,14 +16,22 @@ const ARGS: &'static str = "tests/itest";
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
+    /// The dir to dump tests in
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dump_dir: Option<String>,
+    /// The maximal size of subsets in a powerset
     #[serde(skip_serializing_if = "Option::is_none")]
     pub depth: Option<usize>,
+    /// The binary to test
     #[serde(skip_serializing_if = "Option::is_none")]
     pub binary: Option<String>,
+    /// Arguments to the binary we test
     #[serde(skip_serializing_if = "Option::is_none")]
     pub args: Option<String>,
+    /// The binary to generate from
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gen_binary: Option<String>,
+    /// The list of commands to override
     #[serde(skip_serializing_if = "Option::is_none")]
     pub commands: Option<HashMap<(Option<String>, Option<String>), Command>>,
 }
@@ -35,6 +43,9 @@ pub struct Command {
     pub short: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub long: Option<String>,
+    /// Command prefix, e.g. `--tree` in `--tree -L <n>`
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prefix: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub values: Option<Vec<String>>,
 }
@@ -58,6 +69,7 @@ impl Config {
             Command {
                 short: None,
                 long: Some("time-style".to_string()),
+                prefix: None,
                 values: Some(vec![
                     "default".to_string(),
                     "iso".to_string(),
@@ -72,6 +84,7 @@ impl Config {
             Command {
                 short: Some("-s".to_string()),
                 long: Some("time-style".to_string()),
+                prefix: None,
                 // TODO: non-exhaustive
                 values: Some(vec![
                     "accessed".to_string(),
@@ -89,6 +102,7 @@ impl Config {
                 depth: Some(DEPTH),
                 binary: Some(BINARY.to_string()),
                 args: Some(ARGS.to_string()),
+                gen_binary: Some(ARGS.to_string()),
                 commands: Some(commands),
             },
         }
