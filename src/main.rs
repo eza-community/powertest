@@ -37,8 +37,6 @@ pub mod utils {
 }
 
 fn main() -> std::io::Result<()> {
-    let mut config = crate::data::Config::load(CONFIG);
-
     let matches = command!()
         .author(crate_authors!("\n"))
         .arg(
@@ -73,12 +71,20 @@ fn main() -> std::io::Result<()> {
         //.arg(arg!(-s --short ... "Shows a short aporism."))
         .get_matches();
 
+    let mut config;
+
     if let Some(_config) = matches.get_one::<String>("config") {
-        todo!()
-    } else if let Some(depth) = matches.get_one::<usize>("depth") {
-        config.depth = Some(*depth);
-    } else if let Some(dump_dir) = matches.get_one::<String>("dump") {
+        config = crate::data::Config::load(_config);
+    } else {
+        config = crate::data::Config::load(CONFIG);
+    }
+
+    if let Some(dump_dir) = matches.get_one::<String>("dump") {
         config.dump_dir = Some(dump_dir.to_string());
+    }
+
+    if let Some(depth) = matches.get_one::<usize>("depth") {
+        config.depth = Some(*depth);
     }
 
     let parse: Vec<(Option<String>, Option<String>)>;
