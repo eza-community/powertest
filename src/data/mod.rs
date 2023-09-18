@@ -1,2 +1,2 @@
 mod config;
-pub use self::config::{Command, Config};
+pub use self::config::{Command, Config, CONFIG};

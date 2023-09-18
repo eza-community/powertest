@@ -8,8 +8,6 @@ mod data;
 mod math;
 mod parser;
 
-const CONFIG: &'static str = "powertest.yaml";
-
 pub mod utils {
     use std::io::{self};
     use std::process::{Command, Output};
@@ -76,7 +74,7 @@ fn main() -> std::io::Result<()> {
     if let Some(_config) = matches.get_one::<String>("config") {
         config = crate::data::Config::load(_config);
     } else {
-        config = crate::data::Config::load(CONFIG);
+        config = crate::data::Config::load(data::CONFIG);
     }
 
     if let Some(dump_dir) = matches.get_one::<String>("dump") {

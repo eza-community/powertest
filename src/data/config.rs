@@ -4,6 +4,8 @@ use std::fs;
 
 use log::*;
 
+pub const CONFIG: &'static str = "powertest.yaml";
+
 const DUMP_DIR: &'static str = "dump";
 
 const DEPTH: usize = 2; // Adjust this value as needed
@@ -89,6 +91,9 @@ impl Config {
                 commands: Some(commands),
             },
         }
+    }
+    pub fn gen_example_config(path: &str) -> Self {
+        todo!()
     }
 }
 #[cfg(test)]
