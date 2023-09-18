@@ -71,8 +71,8 @@ fn main() -> std::io::Result<()> {
 
     let mut config;
 
-    if let Some(_config) = matches.get_one::<String>("config") {
-        config = crate::data::Config::load(_config);
+    if let Some(config_file) = matches.get_one::<String>("config") {
+        config = crate::data::Config::load(config_file);
     } else {
         config = crate::data::Config::load(data::CONFIG);
     }
