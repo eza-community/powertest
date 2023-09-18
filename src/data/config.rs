@@ -29,6 +29,8 @@ pub struct Config {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub args: Option<String>,
     /// The binary to generate from
+    ///
+    /// TODO: Implement
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gen_binary: Option<String>,
     /// The list of commands to override
@@ -44,6 +46,8 @@ pub struct Command {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub long: Option<String>,
     /// Command prefix, e.g. `--tree` in `--tree -L <n>`
+    ///
+    /// TODO: Implement
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prefix: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]

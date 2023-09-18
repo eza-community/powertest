@@ -12,11 +12,7 @@ pub mod utils {
     use std::io::{self};
     use std::process::{Command, Output};
 
-    pub fn get_help(
-        command: &str,
-        _args: &[&str],
-        //) -> Result<BufReader<&'a [u8]>, std::io::Error> {
-    ) -> Result<Vec<u8>, std::io::Error> {
+    pub fn get_help(command: &str, _args: &[&str]) -> Result<Vec<u8>, std::io::Error> {
         // TODO: parse args
         // let output: Output = Command::new(command).args(args).output()?;
         let output: Output = Command::new(command).args(["--help"]).output()?;
@@ -29,7 +25,6 @@ pub mod utils {
             ));
         }
 
-        //Ok(BufReader::new(output.stdout.as_slice()))
         Ok(output.stdout)
     }
 }
@@ -144,13 +139,7 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    // println!("{set:?}");
-
-    // println!("{set:#?}");
-
     let powerset = math::generate_powerset(&set, config.depth.unwrap());
-
-    // println!("{powerset:#?}");
 
     let output_strings: Vec<String> = powerset
         .iter()
@@ -165,8 +154,6 @@ fn main() -> std::io::Result<()> {
         .collect();
 
     println!("{output_strings:#?}");
-
-    // println!("Output Strings: {:#?}", output_strings);
 
     // Create the dump directory if it doesn't exist
     let binding = config.dump_dir.unwrap();
