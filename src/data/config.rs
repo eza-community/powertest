@@ -1,3 +1,4 @@
+#![allow(clippy::type_complexity)]
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::{self, write};
@@ -5,14 +6,14 @@ use std::io::Error;
 
 use log::*;
 
-pub const CONFIG: &'static str = "powertest.yaml";
+pub const CONFIG: &str = "powertest.yaml";
 
-const DUMP_DIR: &'static str = "dump";
+const DUMP_DIR: &str = "dump";
 
 const DEPTH: usize = 2; // Adjust this value as needed
 
-const BINARY: &'static str = "eza";
-const ARGS: &'static str = "tests/itest";
+const BINARY: &str = "eza";
+const ARGS: &str = "tests/itest";
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
