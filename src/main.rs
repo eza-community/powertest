@@ -75,7 +75,7 @@ fn main() -> std::io::Result<()> {
 
     if let Some(init) = matches.get_one::<u8>("init") {
         if init > &0 {
-            config.gen_example_config();
+            let _ = config.gen_example_config();
             return Ok(());
         }
     }
