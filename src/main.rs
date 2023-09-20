@@ -75,7 +75,7 @@ fn main() -> std::io::Result<()> {
 
     if let Some(init) = matches.get_one::<u8>("init") {
         if init > &0 {
-            config.gen_example_config();
+            let _ = config.gen_example_config();
             return Ok(());
         }
     }
@@ -125,14 +125,14 @@ fn main() -> std::io::Result<()> {
         } else {
             match &option {
                 (Some(left), Some(right)) => {
-                    set.push(format!("{}", left));
-                    set.push(format!("{}", right));
+                    set.push(left.to_string());
+                    set.push(right.to_string());
                 }
                 (Some(left), None) => {
-                    set.push(format!("{}", left));
+                    set.push(left.to_string());
                 }
                 (None, Some(right)) => {
-                    set.push(format!("{}", right));
+                    set.push(right.to_string());
                 }
                 (None, None) => todo!(),
             }
@@ -171,8 +171,7 @@ fn main() -> std::io::Result<()> {
             .nth(1)
             .unwrap_or("")
             .trim_end_matches('\"')
-            .replace(" ", "_")
-            .replace("/", "_"); // This is to handle the "tests/itest" in ARGS
+            .replace([' ', '/'], "_"); // This is to handle the "tests/itest" in ARGS
 
         let file_path = dump_path.join(format!("ptest_{}.toml", args));
         let mut file = File::create(file_path).expect("Failed to create file");

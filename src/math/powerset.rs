@@ -14,27 +14,28 @@ pub fn generate_powerset<T: Clone>(set: &[T], depth: usize) -> Vec<Vec<T>> {
 
     powerset
 }
-pub fn generate_powerset_combined(
-    set: &[(Option<String>, Option<String>)],
-    depth: usize,
-) -> Vec<Vec<(Option<String>, Option<String>)>> {
-    let mut powerset = vec![vec![]];
-
-    for item in set.iter() {
-        let current_len = powerset.len();
-        for i in 0..current_len {
-            let mut new_subset = powerset[i].clone();
-            new_subset.push(item.clone());
-            if new_subset.len() <= depth {
-                powerset.push(new_subset);
-            }
-        }
-    }
-
-    powerset
-}
 #[cfg(test)]
 mod tests {
+
+    pub fn generate_powerset_combined(
+        set: &[(Option<String>, Option<String>)],
+        depth: usize,
+    ) -> Vec<Vec<(Option<String>, Option<String>)>> {
+        let mut powerset = vec![vec![]];
+
+        for item in set.iter() {
+            let current_len = powerset.len();
+            for i in 0..current_len {
+                let mut new_subset = powerset[i].clone();
+                new_subset.push(item.clone());
+                if new_subset.len() <= depth {
+                    powerset.push(new_subset);
+                }
+            }
+        }
+
+        powerset
+    }
     use super::*;
 
     #[test]
