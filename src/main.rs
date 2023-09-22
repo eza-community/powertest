@@ -88,7 +88,7 @@ fn main() -> std::io::Result<()> {
 
     let parse: Vec<(Option<String>, Option<String>)>;
 
-    // This decided what binary to use:
+    // This decides what binary to use:
     // 1. If user provided `run` flag, we use what they provide
     // 2. Else if the config has a `gen_binaries` record, we use that
     // 3. Else, we use stdin
