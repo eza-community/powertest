@@ -1,9 +1,8 @@
-use std::fs::{self, File};
-use std::io::{BufReader, Write};
-use std::path::Path;
+use std::io::BufReader;
 
 mod cli;
 mod data;
+mod fs;
 mod math;
 mod parser;
 mod utils;
@@ -129,34 +128,9 @@ fn main() -> std::io::Result<()> {
 
     println!("{output_strings:#?}");
 
-    // Create the dump directory if it doesn't exist
-    let binding = config.dump_dir.unwrap();
-    let dump_path = Path::new(&binding);
-    if !dump_path.exists() {
-        fs::create_dir(dump_path)
-            .unwrap_or_else(|_| panic!("Failed to create dump directory: {:?}", dump_path));
-    }
+    let dump_dir = config.dump_dir.unwrap();
 
-    // Write each string in output_strings to a new file in the dump directory
-    for content in &output_strings {
-        // Extract the arguments part from the content
-        let args_line = content.lines().nth(1).unwrap_or("");
-        let args = args_line
-            .split("args = \"")
-            .nth(1)
-            .unwrap_or("")
-            .trim_end_matches('\"')
-            .replace([' ', '/'], "_") // This is to handle the "tests/itest" in ARGS
-            .replace(&['<', '>', ':', '"', '/', '\\', '|', '?', '*'][..], "_"); // Sanitize for Windows
-
-        let file_path = dump_path.join(format!("ptest_{}.toml", args));
-        let mut file =
-            File::create(&file_path).expect(&format!("Failed to create file at {:?}", file_path));
-        let mut file = File::create(&file_path)
-            .unwrap_or_else(|_| panic!("Failed to create file at {:?}", file_path));
-        file.write_all(content.as_bytes())
-            .expect("Failed to write to file");
-    }
+    crate::fs::dump_dir(&dump_dir, output_strings);
 
     Ok(())
 }
