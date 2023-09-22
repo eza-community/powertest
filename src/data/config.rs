@@ -40,8 +40,6 @@ pub struct Config {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Command {
     /// Command prefix, e.g. `--tree` in `--tree -L <n>`
-    ///
-    /// TODO: Implement
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prefix: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
