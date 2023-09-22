@@ -2,8 +2,7 @@ use std::fs::{self, File};
 use std::io::{BufReader, Write};
 use std::path::Path;
 
-use clap::{arg, command, crate_authors, Arg};
-
+mod cli;
 mod data;
 mod math;
 mod parser;
@@ -28,40 +27,7 @@ pub mod utils {
 }
 
 fn main() -> std::io::Result<()> {
-    let matches = command!()
-        .author(crate_authors!("\n"))
-        .arg(arg!(--init ... "Init powertest.toml"))
-        .arg(
-            Arg::new("config")
-                .short('c')
-                .long("config")
-                .value_name("config")
-                .help("Specify config file"),
-        )
-        .arg(
-            Arg::new("dump")
-                .short('D')
-                .long("dump")
-                .value_name("dump")
-                .help("Specify dump dir"),
-        )
-        .arg(
-            Arg::new("run")
-                .short('r')
-                .long("run")
-                .value_name("run")
-                .help("Specify help command"),
-        )
-        .arg(
-            Arg::new("depth")
-                .short('d')
-                .long("depth")
-                .value_name("depth")
-                .value_parser(clap::value_parser!(usize))
-                .help("Specify max set length"),
-        )
-        //.arg(arg!(-s --short ... "Shows a short aporism."))
-        .get_matches();
+    let matches = crate::cli::parse_args();
 
     let mut config;
 
@@ -185,7 +151,8 @@ fn main() -> std::io::Result<()> {
     let binding = config.dump_dir.unwrap();
     let dump_path = Path::new(&binding);
     if !dump_path.exists() {
-        fs::create_dir(dump_path).expect("Failed to create dump directory");
+        fs::create_dir(dump_path)
+            .unwrap_or_else(|_| panic!("Failed to create dump directory: {:?}", dump_path));
     }
 
     // Write each string in output_strings to a new file in the dump directory
