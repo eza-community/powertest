@@ -1,5 +1,28 @@
 use clap::{arg, command, crate_authors, Arg, ArgMatches};
 
+/// Parses command-line arguments using the `clap` library.
+///
+/// # Returns
+///
+/// Returns an instance of `ArgMatches` which contains the parsed arguments.
+///
+/// # Arguments
+///
+/// - `--init`: Initializes the `powertest.toml` file.
+/// - `-c` or `--config <config>`: Specifies the configuration file.
+/// - `-D` or `--dump <dump>`: Specifies the dump directory.
+/// - `-r` or `--run <run>`: Specifies the help command.
+/// - `-d` or `--depth <depth>`: Specifies the maximum set length. The value should be of type `usize`.
+///
+/// # Examples
+///
+/// ```bash
+/// $ my_program --init
+/// $ my_program -c my_config.toml
+/// $ my_program --dump ./dumps/
+/// $ my_program --run help_command
+/// $ my_program --depth 5
+/// ```
 pub fn parse_args() -> ArgMatches {
     command!()
         .author(crate_authors!("\n"))
