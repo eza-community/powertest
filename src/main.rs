@@ -13,8 +13,6 @@ pub mod utils {
     use std::process::{Command, Output};
 
     pub fn get_help(command: &str, _args: &[&str]) -> Result<Vec<u8>, std::io::Error> {
-        // TODO: parse args
-        // let output: Output = Command::new(command).args(args).output()?;
         let output: Output = Command::new(command).args(["--help"]).output()?;
 
         if !output.status.success() {
@@ -90,11 +88,20 @@ fn main() -> std::io::Result<()> {
 
     let parse: Vec<(Option<String>, Option<String>)>;
 
+    // This decided what binary to use:
+    // 1. If user provided `run` flag, we use what they provide
+    // 2. Else if the config has a `gen_binaries` record, we use that
+    // 3. Else, we use stdin
     if let Some(run) = matches.get_one::<String>("run") {
         parse = match crate::utils::get_help(run, &[]) {
             Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
             Err(e) => panic!("{:?}", e),
         };
+    } else if let Some(run) = config.gen_binary {
+        parse = match crate::utils::get_help(&run, &[]) {
+            Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
+            Err(e) => panic!("{:?}", e),
+        }
     } else {
         parse = crate::parser::parse(std::io::stdin().lock());
     }
