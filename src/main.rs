@@ -203,6 +203,8 @@ fn main() -> std::io::Result<()> {
         let file_path = dump_path.join(format!("ptest_{}.toml", args));
         let mut file =
             File::create(&file_path).expect(&format!("Failed to create file at {:?}", file_path));
+        let mut file = File::create(&file_path)
+            .unwrap_or_else(|_| panic!("Failed to create file at {:?}", file_path));
         file.write_all(content.as_bytes())
             .expect("Failed to write to file");
     }
