@@ -9,12 +9,12 @@ pub fn populate_set(
             match key {
                 (Some(left), Some(right)) => {
                     if let Some(prefix) = stuff.prefix.as_ref() {
-                        for value in stuff.values.as_ref().unwrap() {
+                        for value in stuff.values.as_ref().unwrap_or(&vec!["".to_string()]) {
                             set.push(format!("{} {} {}", prefix, left, &value));
                             set.push(format!("{} {} {}", prefix, right, &value));
                         }
                     } else {
-                        for value in stuff.values.as_ref().unwrap() {
+                        for value in stuff.values.as_ref().unwrap_or(&vec!["".to_string()]) {
                             set.push(format!("{} {}", left, &value));
                             set.push(format!("{} {}", right, &value));
                         }
@@ -22,22 +22,22 @@ pub fn populate_set(
                 }
                 (Some(left), None) => {
                     if let Some(prefix) = stuff.prefix.as_ref() {
-                        for value in stuff.values.as_ref().unwrap() {
+                        for value in stuff.values.as_ref().unwrap_or(&vec!["".to_string()]) {
                             set.push(format!("{} {} {}", prefix, left, &value));
                         }
                     } else {
-                        for value in stuff.values.as_ref().unwrap() {
+                        for value in stuff.values.as_ref().unwrap_or(&vec!["".to_string()]) {
                             set.push(format!("{} {}", left, &value));
                         }
                     }
                 }
                 (None, Some(right)) => {
                     if let Some(prefix) = stuff.prefix.as_ref() {
-                        for value in stuff.values.as_ref().unwrap() {
+                        for value in stuff.values.as_ref().unwrap_or(&vec!["".to_string()]) {
                             set.push(format!("{} {} {}", prefix, right, &value));
                         }
                     } else {
-                        for value in stuff.values.as_ref().unwrap() {
+                        for value in stuff.values.as_ref().unwrap_or(&vec!["".to_string()]) {
                             set.push(format!("{} {}", right, &value));
                         }
                     }
