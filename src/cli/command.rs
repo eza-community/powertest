@@ -1,4 +1,4 @@
-use clap::{arg, command, crate_authors, Arg, ArgMatches, Command};
+use clap::{arg, command, crate_authors, Arg, Command};
 
 /// Parses command-line arguments using the `clap` library.
 ///

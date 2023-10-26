@@ -5,7 +5,7 @@ pub fn populate_set(
     set: &mut Vec<String>,
 ) {
     for option in parse {
-        if let Some((key, stuff)) = config.commands.as_ref().unwrap().get_key_value(&option) {
+        if let Some((key, stuff)) = config.commands.as_ref().unwrap().get_key_value(option) {
             match key {
                 (Some(left), Some(right)) => {
                     if let Some(prefix) = stuff.prefix.as_ref() {
