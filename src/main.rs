@@ -8,7 +8,7 @@ mod parser;
 mod utils;
 
 fn main() -> std::io::Result<()> {
-    let matches = crate::cli::parse_args();
+    let matches = crate::cli::build_cli().get_matches();
 
     let mut config;
 
