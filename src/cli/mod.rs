@@ -1,2 +1,2 @@
 mod command;
-pub use self::command::parse_args;
+pub use self::command::build_cli;

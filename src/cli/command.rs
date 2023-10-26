@@ -1,4 +1,4 @@
-use clap::{arg, command, crate_authors, Arg, ArgMatches};
+use clap::{arg, command, crate_authors, Arg, ArgMatches, Command};
 
 /// Parses command-line arguments using the `clap` library.
 ///
@@ -23,7 +23,7 @@ use clap::{arg, command, crate_authors, Arg, ArgMatches};
 /// $ my_program --run help_command
 /// $ my_program --depth 5
 /// ```
-pub fn parse_args() -> ArgMatches {
+pub fn build_cli() -> Command {
     command!()
         .author(crate_authors!("\n"))
         .arg(arg!(--init ... "Init powertest.toml"))
@@ -57,6 +57,5 @@ pub fn parse_args() -> ArgMatches {
                 .value_parser(clap::value_parser!(usize))
                 .help("Specify max set length"),
         )
-        //.arg(arg!(-s --short ... "Shows a short aporism."))
-        .get_matches()
+    //.arg(arg!(-s --short ... "Shows a short aporism."))
 }
