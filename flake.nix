@@ -43,7 +43,6 @@
           # For `nix build` & `nix run`:
           default = naersk'.buildPackage {
             src = ./.;
-            fortunes = ./fortunes;
             doCheck = true; # run `cargo test` on build
             copyBins = true;
             copyLibs = true;
@@ -59,18 +58,12 @@
             '';
 
             preInstall = ''
-              installManPage man/fortune-kind.1
+              installManPage man/powertest.1
               installShellCompletion \
-                --fish man/fortune-kind.fish \
-                --bash man/fortune-kind.bash \
-                --zsh  man/_fortune-kind
+                --fish man/powertest.fish \
+                --bash man/powertest.bash \
+                --zsh  man/_powertest
               mkdir -p $out
-              cp -r $fortunes $out/fortunes;
-            '';
-
-            postInstall = ''
-              wrapProgram $out/bin/fortune-kind \
-                --prefix FORTUNE_DIR : "$out/fortunes"
             '';
           };
 
