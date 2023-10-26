@@ -48,6 +48,7 @@ pub fn parse_args() -> ArgMatches {
                 .value_name("run")
                 .help("Specify help command"),
         )
+        .arg(arg!(--stdin ... "Get help from stdin"))
         .arg(
             Arg::new("depth")
                 .short('d')
