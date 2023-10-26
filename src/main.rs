@@ -33,7 +33,9 @@ fn main() -> std::io::Result<()> {
         config.depth = Some(*depth);
     }
 
-    let parse: Vec<(Option<String>, Option<String>)>;
+    let mut parse: Vec<(Option<String>, Option<String>)> = vec![];
+
+    let mut set = vec![];
 
     // This decides what binary to use:
     // 1. If user provided `run` flag, we use what they provide
@@ -44,16 +46,17 @@ fn main() -> std::io::Result<()> {
             Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
             Err(e) => panic!("{:?}", e),
         };
-    } else if let Some(ref run) = config.gen_binary {
-        parse = match crate::utils::get_help(&run, &[]) {
-            Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
-            Err(e) => panic!("{:?}", e),
+    } else if let Some(stdin) = matches.get_one::<u8>("stdin") {
+        // If --stdin set
+        if stdin > &0 {
+            parse = crate::parser::parse(std::io::stdin().lock());
+        } else if let Some(ref run) = config.gen_binary {
+            parse = match crate::utils::get_help(run, &[]) {
+                Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
+                Err(e) => panic!("{:?}, {run:#?}", e),
+            }
         }
-    } else {
-        parse = crate::parser::parse(std::io::stdin().lock());
     }
-
-    let mut set = vec![];
 
     crate::parser::populate_set(&config, &parse, &mut set);
 
