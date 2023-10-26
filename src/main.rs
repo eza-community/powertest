@@ -44,7 +44,7 @@ fn main() -> std::io::Result<()> {
             Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
             Err(e) => panic!("{:?}", e),
         };
-    } else if let Some(run) = config.gen_binary {
+    } else if let Some(ref run) = config.gen_binary {
         parse = match crate::utils::get_help(&run, &[]) {
             Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
             Err(e) => panic!("{:?}", e),
@@ -55,62 +55,7 @@ fn main() -> std::io::Result<()> {
 
     let mut set = vec![];
 
-    for option in parse {
-        if let Some((key, stuff)) = config.commands.as_ref().unwrap().get_key_value(&option) {
-            match key {
-                (Some(left), Some(right)) => {
-                    if let Some(prefix) = stuff.prefix.as_ref() {
-                        for value in stuff.values.as_ref().unwrap() {
-                            set.push(format!("{} {} {}", prefix, left, &value));
-                            set.push(format!("{} {} {}", prefix, right, &value));
-                        }
-                    } else {
-                        for value in stuff.values.as_ref().unwrap() {
-                            set.push(format!("{} {}", left, &value));
-                            set.push(format!("{} {}", right, &value));
-                        }
-                    }
-                }
-                (Some(left), None) => {
-                    if let Some(prefix) = stuff.prefix.as_ref() {
-                        for value in stuff.values.as_ref().unwrap() {
-                            set.push(format!("{} {} {}", prefix, left, &value));
-                        }
-                    } else {
-                        for value in stuff.values.as_ref().unwrap() {
-                            set.push(format!("{} {}", left, &value));
-                        }
-                    }
-                }
-                (None, Some(right)) => {
-                    if let Some(prefix) = stuff.prefix.as_ref() {
-                        for value in stuff.values.as_ref().unwrap() {
-                            set.push(format!("{} {} {}", prefix, right, &value));
-                        }
-                    } else {
-                        for value in stuff.values.as_ref().unwrap() {
-                            set.push(format!("{} {}", right, &value));
-                        }
-                    }
-                }
-                (None, None) => todo!(),
-            }
-        } else {
-            match &option {
-                (Some(left), Some(right)) => {
-                    set.push(left.to_string());
-                    set.push(right.to_string());
-                }
-                (Some(left), None) => {
-                    set.push(left.to_string());
-                }
-                (None, Some(right)) => {
-                    set.push(right.to_string());
-                }
-                (None, None) => todo!(),
-            }
-        }
-    }
+    crate::parser::populate_set(&config, &parse, &mut set);
 
     let powerset = math::generate_powerset(&set, config.depth.unwrap());
 
