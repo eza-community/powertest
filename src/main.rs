@@ -33,10 +33,13 @@ fn main() -> std::io::Result<()> {
         config.depth = Some(*depth);
     }
 
-    let mut parse: Vec<(Option<String>, Option<String>)> = vec![];
+    let parse: Vec<(Option<String>, Option<String>)>;
 
     let mut set = vec![];
 
+    // TODO: This is such a mess, hopefully I find the spoons to fix it some
+    // day... as if...
+    //
     // This decides what binary to use:
     // 1. If user provided `run` flag, we use what they provide
     // 2. Else if the config has a `gen_binaries` record, we use that
@@ -46,6 +49,7 @@ fn main() -> std::io::Result<()> {
             Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
             Err(e) => panic!("{:?}", e),
         };
+    // NOTE: for some reason this is always true for u8, but I don't trust it
     } else if let Some(stdin) = matches.get_one::<u8>("stdin") {
         // If --stdin set
         if stdin > &0 {
@@ -55,7 +59,25 @@ fn main() -> std::io::Result<()> {
                 Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
                 Err(e) => panic!("{:?}, {run:#?}", e),
             }
+        // If we don't generate at all
+        } else {
+            // HACK: We fake being a parsed help... obviously bad.
+            let mut res = vec![];
+            for (k, _) in config.commands.as_ref().unwrap().iter() {
+                res.push(match k {
+                    (Some(short), Some(long)) => (
+                        Some(short.as_str().to_string()),
+                        Some(long.as_str().to_string()),
+                    ),
+                    (Some(short), None) => (Some(short.as_str().to_string()), None),
+                    (None, Some(long)) => (None, Some(long.as_str().to_string())),
+                    (None, None) => (None, None),
+                })
+            }
+            parse = res;
         }
+    } else {
+        unreachable!();
     }
 
     crate::parser::populate_set(&config, &parse, &mut set);
