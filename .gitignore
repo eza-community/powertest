@@ -2,4 +2,9 @@
 /dump
 /testdir
 powertest.yaml
+
 /tests
+/target
+/result
+
+.direnv
