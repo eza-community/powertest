@@ -52,6 +52,7 @@ fn main() -> std::io::Result<()> {
     // NOTE: for some reason this is always true for u8, but I don't trust it
     } else if let Some(stdin) = matches.get_one::<u8>("stdin") {
         // If --stdin set
+        #[allow(clippy::suspicious_else_formatting)]
         if stdin > &0 {
             parse = crate::parser::parse(std::io::stdin().lock());
         } else {
