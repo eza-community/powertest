@@ -1,4 +1,6 @@
+use std::collections::hash_map::DefaultHasher;
 use std::fs::File;
+use std::hash::{Hash, Hasher};
 use std::io::Write;
 use std::path::Path;
 
@@ -55,10 +57,16 @@ pub fn dump_dir(dump_dir: &str, output_strings: Vec<String>) {
             .replace([' ', '/'], "_") // This is to handle the "tests/itest" in ARGS
             .replace(&['<', '>', ':', '"', '/', '\\', '|', '?', '*'][..], "_"); // Sanitize for Windows
 
-        let file_path = dump_path.join(format!("ptest_{}.toml", args));
+        let file_path = dump_path.join(format!("ptest_{}_{:x}.toml", args, hash(&args)));
         let mut file = File::create(&file_path)
             .unwrap_or_else(|_| panic!("Failed to create file at {:?}", file_path));
         file.write_all(content.as_bytes())
             .expect("Failed to write to file");
     }
+}
+
+fn hash<T: Hash>(t: &T) -> u64 {
+    let mut hasher = DefaultHasher::new();
+    t.hash(&mut hasher);
+    hasher.finish()
 }
