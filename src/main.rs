@@ -54,15 +54,7 @@ fn main() -> std::io::Result<()> {
         // If --stdin set
         if stdin > &0 {
             parse = crate::parser::parse(std::io::stdin().lock());
-        }
-        // else if let Some(ref run) = config.gen_binary {
-        //     parse = match crate::utils::get_help(run, &[]) {
-        //         Ok(parse) => crate::parser::parse(BufReader::new(parse.as_slice())),
-        //         Err(e) => panic!("{:?}, {run:#?}", e),
-        //     }
-        // // If we don't generate at all
-        // }
-        else {
+        } else {
             // HACK: We fake being a parsed help... obviously bad.
             let mut res = vec![];
             for (k, _) in config.commands.as_ref().unwrap().iter() {
