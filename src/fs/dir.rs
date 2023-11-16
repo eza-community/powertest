@@ -57,7 +57,7 @@ pub fn dump_dir(dump_dir: &str, output_strings: Vec<String>) {
             .replace([' ', '/'], "_") // This is to handle the "tests/itest" in ARGS
             .replace(&['<', '>', ':', '"', '/', '\\', '|', '?', '*'][..], "_"); // Sanitize for Windows
 
-        let file_path = dump_path.join(format!("ptest_{}_{:x}.toml", args, hash(&args)));
+        let file_path = dump_path.join(format!("ptest_{:x}.toml", hash(&args)));
         let mut file = File::create(&file_path)
             .unwrap_or_else(|_| panic!("Failed to create file at {:?}", file_path));
         file.write_all(content.as_bytes())
